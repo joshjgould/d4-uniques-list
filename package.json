@@ -1,0 +1,25 @@
+{
+  "name": "d4-uniques-list",
+  "version": "1.0.0",
+  "private": true,
+  "description": "generate a list of all uniques used in maxroll builds",
+  "main": "test/specs/test.e2e.js",
+  "scripts": {
+    "start": "wdio run wdio.conf.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "d4",
+    "uniques"
+  ],
+  "author": "Josh Gould",
+  "license": "ISC",
+  "devDependencies": {
+    "@wdio/cli": "^9.2.8",
+    "@wdio/local-runner": "^9.2.8",
+    "@wdio/mocha-framework": "^9.2.8",
+    "@wdio/spec-reporter": "^9.2.8",
+    "chromedriver": "^130.0.2",
+    "wdio-chromedriver-service": "^8.1.1"
+  }
+}
