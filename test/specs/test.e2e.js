@@ -33,16 +33,21 @@ describe('Get a list of uniques used in builds', () => {
         await browser.url(build.link)
         const statPrioritySelector = 'div[class="_headers_1e0ye_7"]';
 
-        const tabs = await $(statPrioritySelector).$$('div');
+        const tabs = build.name === 'Shadow Step Rogue' ? await $('figure') : await $(statPrioritySelector).$$('div');
         const variants = [];
-        // iterate over each section
+
+        // iterate over each tab
         for (let i = 0; i < tabs.length; i++) {
           let variant = await $(statPrioritySelector).$$('div')[i].getText();
           variants.push(variant);
         }
+        if (!tabs.length) variants.push('Specialty');
+
         variantList.push({ name: build.name, variants});
-        console.log(`variantList: `, variantList)
       }
+
+      console.log(`variantList: `, variantList);
+      await expect(variantList.length).toBeGreaterThan(0);
     })
 })
 
