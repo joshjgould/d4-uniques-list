@@ -53,17 +53,26 @@ describe('Get a list of uniques used in builds', () => {
             items =  await $(itemListSelector).$('div[class="d4t-content"]').$$('div[class="d4t-item"]');
           } else {
             await $(statPrioritySelector).$(`div=${tab}`).click();
+            const hasTabs = await $$(itemListSelector).length > 1 ? true : false;
             const hasActiveTab = await $(activeTabSelector).$(itemListSelector).isExisting();
-            if (hasActiveTab) {
+            if (hasTabs && hasActiveTab) {
               items =  await $(activeTabSelector).$(itemListSelector).$('div[class="d4t-content"]').$$('div[class="d4t-item"]');
+            } else if (hasTabs && !hasActiveTab) {
+              // theres no items for this tab
             } else {
               items =  await $(itemListSelector).$('div[class="d4t-content"]').$$('div[class="d4t-item"]');
             }
           }
 
-          for (let j = 0; j < items.length; j++) {
-            let item = await items[j].$('div[class="d4t-body"]').$('div[class="d4t-header"]').$('span[class^="d4-color-"]').getText();
-            itemList.push({ item, build: build.name, variant: tab });
+          if (items) {
+            for (let j = 0; j < items.length; j++) {
+              let isMythic = await items[j].$('div[class="d4t-body"]').$('div[class="d4t-header"]').$('span[class="d4-color-mythic"]').isExisting();
+              let isUnique = await items[j].$('div[class="d4t-body"]').$('div[class="d4t-header"]').$('span[class="d4-color-unique"]').isExisting();
+              if (isMythic || isUnique) {
+                let item = await items[j].$('div[class="d4t-body"]').$('div[class="d4t-header"]').$('span[class^="d4-color-"]').getText();
+                itemList.push({ item, build: build.name, variant: tab });
+              }
+            }
           }
         }
       }
