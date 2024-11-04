@@ -53,18 +53,17 @@ describe('Get a list of uniques used in builds', () => {
             items =  await $(itemListSelector).$('div[class="d4t-content"]').$$('div[class="d4t-item"]');
           } else {
             await $(statPrioritySelector).$(`div=${tab}`).click();
-            const hasItems = await $(activeTabSelector).$(itemListSelector).isExisting();
-            if (hasItems) {
+            const hasActiveTab = await $(activeTabSelector).$(itemListSelector).isExisting();
+            if (hasActiveTab) {
               items =  await $(activeTabSelector).$(itemListSelector).$('div[class="d4t-content"]').$$('div[class="d4t-item"]');
             } else {
-              itemList.push({ item: 'placeholder', build: build.name, variant: tab });
+              items =  await $(itemListSelector).$('div[class="d4t-content"]').$$('div[class="d4t-item"]');
             }
           }
-          if (items) {
-            for (let j = 0; j < items.length; j++) {
-              let item = await items[j].$('div[class="d4t-body"]').$('div[class="d4t-header"]').$('span[class^="d4-color-"]').getText();
-              itemList.push({ item, build: build.name, variant: tab });
-            }
+
+          for (let j = 0; j < items.length; j++) {
+            let item = await items[j].$('div[class="d4t-body"]').$('div[class="d4t-header"]').$('span[class^="d4-color-"]').getText();
+            itemList.push({ item, build: build.name, variant: tab });
           }
         }
       }
