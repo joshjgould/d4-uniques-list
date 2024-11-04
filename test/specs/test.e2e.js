@@ -70,7 +70,13 @@ describe('Get a list of uniques used in builds', () => {
               let isUnique = await items[j].$('div[class="d4t-body"]').$('div[class="d4t-header"]').$('span[class="d4-color-unique"]').isExisting();
               if (isMythic || isUnique) {
                 let item = await items[j].$('div[class="d4t-body"]').$('div[class="d4t-header"]').$('span[class^="d4-color-"]').getText();
-                itemList.push({ item, build: build.name, variant: tab });
+                let stats = await items[j].$('div[class="d4t-body"]').$$('li[class="d4t-number"]');
+                const itemStats = {};
+                for (let s = 0; s < stats.length; s++) {
+                  stat = await items[j].$('div[class="d4t-body"]').$$('li[class="d4t-number"]')[s].getText();
+                  itemStats[`stat${s+1}`] = stat;
+                }
+                itemList.push({ item, build: build.name, variant: tab, ...itemStats });
               }
             }
           }
