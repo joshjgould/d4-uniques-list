@@ -32,12 +32,12 @@ describe('Get a list of uniques used in builds', () => {
     it('Get a list of items for each build', async () => {
       for (const build of buildList) {
         await browser.url(build.link)
-        const statPrioritySelector = 'div[class="_headers_1e0ye_7"]';
+        const variantSelector = 'div[class*="_headers_"]'; // past values _headers_t39ri_7 _headers_1e0ye_7
         const itemListSelector = 'div[class="d4t-PriorityEmbed"]';
-        const activeTabSelector = 'div[class="_tab_1e0ye_1 _visible_1e0ye_88"]';
+        const activeTabSelector = 'div[class*="_visible_"]'; // past values _tab_t39ri_1 _visible_t39ri_97 _tab_1e0ye_1 _visible_1e0ye_88
 
-        let hasTabs = await $('div[class="_header_1e0ye_7 _headerActive_1e0ye_38"]').isExisting();
-        const tabs = hasTabs ? await $(statPrioritySelector).$$('div') : await $('figure');
+        let hasVariants = await $('div[class*="_headerActive_"]').isExisting(); //past values _header_t39ri_7 _headerActive_t39ri_46 _header_1e0ye_7 _headerActive_1e0ye_38
+        const tabs = hasVariants ? await $(variantSelector).$$('div') : await $('figure');
         const variants = [];
 
         // iterate over each tab
@@ -45,14 +45,14 @@ describe('Get a list of uniques used in builds', () => {
           let variant = await tabs[i].getText();
           variants.push(variant);
         }
-        if (!hasTabs) variants.push('Specialty');
+        if (!hasVariants) variants.push('Specialty');
 
         for (const tab of variants) {
           let items;
           if (tab === 'Specialty') {
             items =  await $(itemListSelector).$('div[class="d4t-content"]').$$('div[class="d4t-item"]');
           } else {
-            await $(statPrioritySelector).$(`div=${tab}`).click();
+            await $(variantSelector).$(`div=${tab}`).click();
             const hasTabs = await $$(itemListSelector).length > 1 ? true : false;
             const hasActiveTab = await $(activeTabSelector).$(itemListSelector).isExisting();
             if (hasTabs && hasActiveTab) {
