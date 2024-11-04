@@ -13,12 +13,12 @@ describe('Get a list of uniques used in builds', () => {
 
         // iterate over each section
         for (let i = 0; i < sectionNodes.length; i++) {
-          let buildNodes = await $(tierListSelector).$$(sectionSelector)[i].$$(buildSelector);
+          let buildNodes = await sectionNodes[i].$$(buildSelector);
 
           // iterate over each build
           for (let j = 0; j < buildNodes.length; j++) {
-            let name = await $(tierListSelector).$$(sectionSelector)[i].$$(buildSelector)[j].$(`a`).getText();
-            let link = await $(tierListSelector).$$(sectionSelector)[i].$$(buildSelector)[j].$(`a`).getAttribute('href');
+            let name = await buildNodes[j].$(`a`).getText();
+            let link = await buildNodes[j].$(`a`).getAttribute('href');
             buildList.push({ name, link });
           }
         }
@@ -33,15 +33,16 @@ describe('Get a list of uniques used in builds', () => {
         await browser.url(build.link)
         const statPrioritySelector = 'div[class="_headers_1e0ye_7"]';
 
-        const tabs = build.name === 'Shadow Step Rogue' ? await $('figure') : await $(statPrioritySelector).$$('div');
+        let hasTabs = await $('div[class="_header_1e0ye_7 _headerActive_1e0ye_38"').isExisting();
+        const tabs = hasTabs ? await $(statPrioritySelector).$$('div') : await $('figure');
         const variants = [];
 
         // iterate over each tab
         for (let i = 0; i < tabs.length; i++) {
-          let variant = await $(statPrioritySelector).$$('div')[i].getText();
+          let variant = await tabs[i].getText();
           variants.push(variant);
         }
-        if (!tabs.length) variants.push('Specialty');
+        if (!hasTabs) variants.push('Specialty');
 
         variantList.push({ name: build.name, variants});
       }
