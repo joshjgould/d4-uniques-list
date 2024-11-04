@@ -1,6 +1,9 @@
 const { expect, browser, $ } = require('@wdio/globals');
+const fs = require('fs');
+const { parse } = require('json2csv');
 
 const buildList = [];
+const itemList = [];
 
 describe('Get a list of uniques used in builds', () => {
     it('Get a list of builds from maxroll tier list', async () => {
@@ -26,14 +29,14 @@ describe('Get a list of uniques used in builds', () => {
         await expect(buildList.length).toBeGreaterThan(0);
     })
 
-    it('Get a list of variants for each build', async () => {
-      const variantList = [];
-
+    it('Get a list of items for each build', async () => {
       for (const build of buildList) {
         await browser.url(build.link)
         const statPrioritySelector = 'div[class="_headers_1e0ye_7"]';
+        const itemListSelector = 'div[class="d4t-PriorityEmbed"]';
+        const activeTabSelector = 'div[class="_tab_1e0ye_1 _visible_1e0ye_88"]';
 
-        let hasTabs = await $('div[class="_header_1e0ye_7 _headerActive_1e0ye_38"').isExisting();
+        let hasTabs = await $('div[class="_header_1e0ye_7 _headerActive_1e0ye_38"]').isExisting();
         const tabs = hasTabs ? await $(statPrioritySelector).$$('div') : await $('figure');
         const variants = [];
 
@@ -44,11 +47,48 @@ describe('Get a list of uniques used in builds', () => {
         }
         if (!hasTabs) variants.push('Specialty');
 
-        variantList.push({ name: build.name, variants});
+        for (const tab of variants) {
+          let items;
+          if (tab === 'Specialty') {
+            items =  await $(itemListSelector).$('div[class="d4t-content"]').$$('div[class="d4t-item"]');
+          } else {
+            await $(statPrioritySelector).$(`div=${tab}`).click();
+            const hasItems = await $(activeTabSelector).$(itemListSelector).isExisting();
+            if (hasItems) {
+              items =  await $(activeTabSelector).$(itemListSelector).$('div[class="d4t-content"]').$$('div[class="d4t-item"]');
+            } else {
+              itemList.push({ item: 'placeholder', build: build.name, variant: tab });
+            }
+          }
+          if (items) {
+            for (let j = 0; j < items.length; j++) {
+              let item = await items[j].$('div[class="d4t-body"]').$('div[class="d4t-header"]').$('span[class^="d4-color-"]').getText();
+              itemList.push({ item, build: build.name, variant: tab });
+            }
+          }
+        }
       }
 
-      console.log(`variantList: `, variantList);
-      await expect(variantList.length).toBeGreaterThan(0);
+      await expect(itemList.length).toBeGreaterThan(0);
     })
 })
 
+describe('Create CSV file', () => {
+  it('Convert itemList object to CSV', () => {
+    if (itemList.length) {
+      const fields = Object.keys(itemList[0]);
+      const opts = { fields };
+
+      try {
+        const csv = parse(itemList, opts);
+        fs.writeFile(`d4-uniques-list.csv`, csv, function (err) {
+          if (err) throw err;
+        });
+      } catch (err) {
+        console.error(err);
+      }
+    } else {
+      console.log('No items to export');
+    }
+  });
+});
