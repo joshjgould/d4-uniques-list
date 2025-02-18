@@ -9,8 +9,8 @@ https://webdriver.io/docs/gettingstarted.html
 
 In order to run this app the following must be installed:
 
-- Chrome: v130+
-- Node: v22.11.0+
+- [Chrome](https://www.google.com/intl/en_ca/chrome/): v130+
+- [Node](https://nodejs.org/en/download): v22.11.0+
 
 ## Installing this app:
 
@@ -19,3 +19,7 @@ run the following command: `npm ci`
 ## Running this app:
 
 run the following command: `npm start`
+
+## Output
+
+This app generates a `CSV` file with a list of all uniques used, and which build variants it's used in, their stat priorities, and a link to the build.
