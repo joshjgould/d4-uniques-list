@@ -76,7 +76,7 @@ describe('Get a list of uniques used in builds', () => {
                   stat = await items[j].$('div[class="d4t-body"]').$$('li[class="d4t-number"]')[s].getText();
                   itemStats[`stat${s+1}`] = stat;
                 }
-                itemList.push({ item, build: build.name, variant: tab, ...itemStats });
+                itemList.push({ item, build: build.name, variant: tab, ...itemStats, link: build.link });
               }
             }
           }
