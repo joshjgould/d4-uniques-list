@@ -37,7 +37,7 @@ describe('Get a list of uniques used in builds', () => {
         const activeTabSelector = 'div[class*="_visible_"]'; // past values _tab_t39ri_1 _visible_t39ri_97 _tab_1e0ye_1 _visible_1e0ye_88
 
         let hasVariants = await $('div[class*="_headerActive_"]').isExisting(); //past values _header_t39ri_7 _headerActive_t39ri_46 _header_1e0ye_7 _headerActive_1e0ye_38
-        const tabs = hasVariants ? await $(variantSelector).$$('div') : await $('figure');
+        const tabs = hasVariants ? await $$(variantSelector)[1].$$('div') : await $('figure');
         const variants = [];
 
         // iterate over each tab
@@ -52,7 +52,7 @@ describe('Get a list of uniques used in builds', () => {
           if (tab === 'Specialty') {
             items =  await $(itemListSelector).$('div[class="d4t-content"]').$$('div[class="d4t-item"]');
           } else {
-            await $(variantSelector).$(`div=${tab}`).click();
+            await $$(variantSelector)[1].$(`div=${tab}`).click();
             const hasTabs = await $$(itemListSelector).length > 1 ? true : false;
             const hasActiveTab = await $(activeTabSelector).$(itemListSelector).isExisting();
             if (hasTabs && hasActiveTab) {
