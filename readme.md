@@ -22,4 +22,4 @@ run the following command: `npm start`
 
 ## Output
 
-This app generates a `CSV` file with a list of all uniques used, and which build variants it's used in, their stat priorities, and a link to the build.
+This app generates a `CSV` and a 'JSON' file with a list of all uniques used, and which build variants it's used in, their stat priorities, and a link to the build.

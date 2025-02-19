@@ -7,7 +7,7 @@ const itemList = [];
 
 describe('Get a list of uniques used in builds', () => {
     it('Get a list of builds from maxroll tier list', async () => {
-        await browser.url(`https://maxroll.gg/d4/tierlists/endgame-tier-list`)
+        await browser.url(`https://maxroll.gg/d4/tierlists/endgame-tier-list`);
         const tierListSelector = '#main-article';
         const sectionSelector = 'div[class="my-2 flex flex-col gap-4"]';
         const buildSelector = 'div[class="border-grey-425 flex items-center border-b pr-4 pb-2 md:border-b-0 md:pb-0 md:pr-0"]';
@@ -36,8 +36,10 @@ describe('Get a list of uniques used in builds', () => {
         const itemListSelector = 'div[class="d4t-PriorityEmbed"]';
         const activeTabSelector = 'div[class*="_visible_"]'; // past values _tab_t39ri_1 _visible_t39ri_97 _tab_1e0ye_1 _visible_1e0ye_88
 
-        let hasVariants = await $('div[class*="_headerActive_"]').isExisting(); //past values _header_t39ri_7 _headerActive_t39ri_46 _header_1e0ye_7 _headerActive_1e0ye_38
-        const tabs = hasVariants ? await $$(variantSelector)[1].$$('div') : await $('figure');
+        const tabsHack = (build.name ===  'Earthquake Barb') ? true : false;
+        let hasVariants = await $(variantSelector).isExisting();
+        let tabs = hasVariants ? await $(variantSelector).$$('div') : await $('figure');
+        if (tabsHack) tabs = await $$(variantSelector)[1].$$('div');
         const variants = [];
 
         // iterate over each tab
@@ -52,11 +54,13 @@ describe('Get a list of uniques used in builds', () => {
           if (tab === 'Specialty') {
             items =  await $(itemListSelector).$('div[class="d4t-content"]').$$('div[class="d4t-item"]');
           } else {
-            await $$(variantSelector)[1].$(`div=${tab}`).click();
+            let variantSection = tabsHack ? $$(variantSelector)[1] : $(variantSelector);
+            await variantSection.$(`div=${tab}`).click();
             const hasTabs = await $$(itemListSelector).length > 1 ? true : false;
-            const hasActiveTab = await $(activeTabSelector).$(itemListSelector).isExisting();
+            const itemSection = tabsHack ? $$(activeTabSelector)[1] : $(activeTabSelector);
+            const hasActiveTab = await itemSection.$(itemListSelector).isExisting();
             if (hasTabs && hasActiveTab) {
-              items =  await $(activeTabSelector).$(itemListSelector).$('div[class="d4t-content"]').$$('div[class="d4t-item"]');
+              items =  await itemSection.$(itemListSelector).$('div[class="d4t-content"]').$$('div[class="d4t-item"]');
             } else if (hasTabs && !hasActiveTab) {
               // theres no items for this tab
             } else {
@@ -87,7 +91,7 @@ describe('Get a list of uniques used in builds', () => {
     })
 })
 
-describe('Create CSV file', () => {
+describe('Create output files', () => {
   it('Convert itemList object to CSV', () => {
     if (itemList.length) {
       const fields = Object.keys(itemList[0]);
@@ -95,7 +99,21 @@ describe('Create CSV file', () => {
 
       try {
         const csv = parse(itemList, opts);
-        fs.writeFile(`d4-uniques-list.csv`, csv, function (err) {
+        fs.writeFileSync(`d4-uniques-list.csv`, csv, function (err) {
+          if (err) throw err;
+        });
+      } catch (err) {
+        console.error(err);
+      }
+    } else {
+      console.log('No items to export');
+    }
+  });
+
+  it('Save itemList object to JSON', () => {
+    if (itemList.length) {
+      try {
+        fs.writeFileSync(`d4-uniques-list.json`, JSON.stringify(itemList), function (err) {
           if (err) throw err;
         });
       } catch (err) {
