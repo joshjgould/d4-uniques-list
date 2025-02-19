@@ -15,11 +15,11 @@
   "author": "Josh Gould",
   "license": "ISC",
   "devDependencies": {
-    "@wdio/cli": "^9.7.1",
-    "@wdio/local-runner": "^9.7.1",
-    "@wdio/mocha-framework": "^9.6.4",
-    "@wdio/spec-reporter": "^9.6.3",
-    "chromedriver": "^132.0.1",
+    "@wdio/cli": "^9.9.3",
+    "@wdio/local-runner": "^9.9.3",
+    "@wdio/mocha-framework": "^9.9.0",
+    "@wdio/spec-reporter": "^9.9.0",
+    "chromedriver": "^133.0.1",
     "wdio-chromedriver-service": "^8.1.1"
   },
   "dependencies": {
